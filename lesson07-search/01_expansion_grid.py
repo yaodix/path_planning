@@ -43,6 +43,7 @@ def search(grid,init,goal,cost):
     visited = [[0 for row in range(n_rows)] for col in range(n_cols)]
     
     # Create expansion grid (initialized with -1) and a expansion counter
+    # ly..expand show the optimal path
     expand = [[-1 for row in range(n_rows)] for col in range(n_cols)]
     n_expansions = 0
     
@@ -68,6 +69,7 @@ def search(grid,init,goal,cost):
             path = [-1, -1, -1]
         else:
             # Expand the next cell with the smallest cost
+            # method 1
             paths_to_expand.sort() # Sort according 1st element (cost)
             paths_to_expand.reverse() # Reverse to have the smallest cost at the end
             next_cell = paths_to_expand.pop() # Pop last element

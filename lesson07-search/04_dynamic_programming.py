@@ -37,7 +37,7 @@ def compute_value(grid, goal, cost):
     
     # Iterate while we manage to do any change
     change = True
-    while change:
+    while change:  # can be repalced py DFS or BFS
         change = False
     
         # Go over the whole map

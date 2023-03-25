@@ -15,14 +15,22 @@
 
 grid = [[0, 1, 0, 0, 0, 0],
         [0, 1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0],
         [0, 0, 0, 0, 1, 0]]
 heuristic = [[9, 8, 7, 6, 5, 4],
              [8, 7, 6, 5, 4, 3],
              [7, 6, 5, 4, 3, 2],
              [6, 5, 4, 3, 2, 1],
              [5, 4, 3, 2, 1, 0]]
+# grid = [[0, 0, 1, 0, 0],
+#         [0, 0, 0, 0, 0],
+#         [0, 0, 1, 0, 0],
+#         [0, 0, 1, 0, 0]]
+# heuristic = [[ 7, 6, 5, 4, 3],
+#              [ 6, 5, 4, 3, 2],
+#              [ 5, 4, 3, 2, 1],
+#              [ 4, 3, 2, 1, 0]]
 
 init = [0, 0]
 goal = [len(grid)-1, len(grid[0])-1]
@@ -48,7 +56,7 @@ def search(grid,init,goal,cost,heuristic):
     x = init[0]
     y = init[1]
     g = 0
-    f = g + heuristic[x][y]
+    f = g + heuristic[x][y]  # compare value
 
     open = [[f, g, x, y]]
 
@@ -86,4 +94,7 @@ def search(grid,init,goal,cost,heuristic):
 
     return expand
 
-print(search(grid,init,goal,cost,heuristic))
+
+expand = search(grid,init,goal,cost,heuristic)
+for index in range(len(expand)):
+    print(expand[index])

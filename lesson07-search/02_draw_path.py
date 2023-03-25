@@ -1,7 +1,7 @@
 # -----------
 # User Instructions:
 #
-# Modify the the search function so that it returns
+# Modify the search function so that it returns
 # a shortest path as follows:
 # 
 # [['>', 'v', ' ', ' ', ' ', ' '],
