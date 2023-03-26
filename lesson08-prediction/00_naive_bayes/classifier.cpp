@@ -2,50 +2,44 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 using Eigen::ArrayXd;
 using std::string;
 using std::vector;
 
 // Initializes GNB
-GNB::GNB()
-{
+GNB::GNB() {
   /**
-   * DONE: Initialize GNB, if necessary. May depend on your implementation.
+   * TODO: Initialize GNB, if necessary. May depend on your implementation.
    */
-   
-    // "possible_labels" initialised to {"left","keep","right"} in class declaration
-   
-    // State's means for every class 
-    left_mean = ArrayXd(4);
-    left_mean << 0.0, 0.0, 0.0, 0.0;
+  left_means = ArrayXd(4);
+  left_means << 0,0,0,0;
+  
+  left_sds = ArrayXd(4);
+  left_sds << 0,0,0,0;
     
-    keep_mean = ArrayXd(4);
-    keep_mean << 0.0, 0.0, 0.0, 0.0;
-    right_mean = ArrayXd(4);
+  left_prior = 0;
     
-    right_mean << 0.0, 0.0, 0.0, 0.0;
-    
-    // State's variances for every class 
-    left_var = ArrayXd(4);
-    left_var << 0.0, 0.0, 0.0, 0.0;
-    
-    keep_var = ArrayXd(4);
-    keep_var << 0.0, 0.0, 0.0, 0.0;
-    
-    right_var = ArrayXd(4);
-    right_var << 0.0, 0.0, 0.0, 0.0;
-    
-    // State's priors for every class 
-    left_prior = 0;
-    keep_prior = 0;
-    right_prior = 0;
+  keep_means = ArrayXd(4);
+  keep_means << 0,0,0,0;
+  
+  keep_sds = ArrayXd(4);
+  keep_sds << 0,0,0,0;
+  
+  keep_prior = 0;
+  
+  right_means = ArrayXd(4);
+  right_means << 0,0,0,0;
+  
+  right_sds = ArrayXd(4);
+  right_sds << 0,0,0,0;
+  
+  right_prior = 0;
 }
 
 GNB::~GNB() {}
 
-void GNB::train(const vector<vector<double>> &data, const vector<string> &labels)
-{
   /**
    * Trains the classifier with N data points and labels.
    * @param data - array of N observations
@@ -57,127 +51,72 @@ void GNB::train(const vector<vector<double>> &data, const vector<string> &labels
    * @param labels - array of N labels
    *   - Each label is one of "left", "keep", or "right".
    *
-   * DONE: Implement the training function for your classifier.
+   * TODO: Implement the training function for your classifier.
    */
-   
-   // This function uses data to build a normal distribution for each variable (s, d, s_dot and d_dot)
-   //// We need: mean, variance and prior (probability of each class)
-   std::cout << "[i] TRAINING PROCESS STARTED" << std::endl;
-   
-   
-   //*************************
-   // STEP 0: Checks and setup
-   //*************************
-   std::cout << "  [i] STEP 0 started - Checks and setup" << std::endl;
-   // Check that the amount of data and labels is equal
-   unsigned int n_samples = data.size();
-   unsigned int n_labels = labels.size();
-   if(n_samples != n_labels)
-   {
-       std::cout << "    [!] ERROR! The number of data samples is not equal to the number of labels." << std::endl;
-       std::cout << "      [i] Data samples: " << n_samples << ". Labels: " << n_labels << std::endl;
-       std::cout << "      [i] Aborting GNB::train() execution..." << std::endl;
-       return;
-   }
-   
-   // Counters for the number of samples of each class
-   int n_left_samples = 0;
-   int n_keep_samples = 0;
-   int n_right_samples = 0;
-   
-   
-   
-   //*********************
-   // STEP 1: Compute mean
-   //*********************
-   std::cout << "  [i] STEP 1 started - Mean computation" << std::endl;
-   unsigned int data_size = data[0].size();
-   Eigen::ArrayXd adapted_data;
-   
-   // Iterate trough the data samples (and labels)
-   for(unsigned int idx=0; idx<n_samples; idx++)
-   {
-       // Get data from this sample
-       //// Use Eigen::aligned_allocator to map between std::vector and Eigenl::ArrayXd
-       //// https://eigen.tuxfamily.org/dox/classEigen_1_1aligned__allocator.html
-       adapted_data = Eigen::ArrayXd::Map(data[idx].data(), data_size);
-       
-       // Accumulate measure and count sample
-       if(labels[idx] == "left")
-       {
-           left_mean += adapted_data;
-           n_left_samples++;
-       }
-       else if(labels[idx] == "keep")
-       {
-           keep_mean += adapted_data;
-           n_keep_samples++;
-       }
-       else if(labels[idx] == "right")
-       {
-           right_mean += adapted_data;
-           n_right_samples++;
-       }
-   }
-   
-   // Print information about the amount of samples of each class
-   std::cout << "    [i] Amount of samples per class (out of "<< n_samples << " samples):" << std::endl;
-   std::cout << "      - " << n_left_samples << " left samples" << std::endl;
-   std::cout << "      - " << n_keep_samples << " keep samples" << std::endl;
-   std::cout << "      - " << n_right_samples << " right samples" << std::endl;
-   
-   // Divide accumulated measurements by the amount of samples
-   left_mean /= n_left_samples;
-   keep_mean /= n_keep_samples;
-   right_mean /= n_right_samples;
-   
-   
-   
-   //*************************
-   // STEP 2: Compute variance
-   //*************************
-   std::cout << "  [i] STEP 2 started - Variance computation" << std::endl;
-   // Iterate trough the data samples (and labels)
-   for(unsigned int idx=0; idx<n_samples; idx++)
-   {
-       // Get data from this sample
-       //// Use Eigen::aligned_allocator to map between std::vector and Eigenl::ArrayXd
-       //// https://eigen.tuxfamily.org/dox/classEigen_1_1aligned__allocator.html
-       //// "data_size" declared and assigned in "STEP 1"
-       adapted_data = Eigen::ArrayXd::Map(data[idx].data(), data_size);
-       
-       // Compute numerator
-       //// Formula: https://www.mathsisfun.com/data/standard-deviation-formulas.html
-       if(labels[idx] == "left")
-           left_var += pow((adapted_data - left_mean), 2);
-       else if(labels[idx] == "keep")
-           keep_var += pow((adapted_data - keep_mean), 2);
-       else if(labels[idx] == "right")
-           right_var += pow((adapted_data - right_mean), 2);
-   }
-   
-   // Square root of the means of the variances
-   left_var = sqrt(left_var/n_left_samples);
-   keep_var = sqrt(keep_var/n_keep_samples);
-   right_var = sqrt(right_var/n_right_samples);
-   
-   
-   
-   //**********************
-   // STEP 3: Compute prior
-   //**********************
-   std::cout << "  [i] STEP 3 started - Prior computation" << std::endl;
+void GNB::train(const vector<vector<double>> &data, 
+                const vector<string> &labels) {
   
-   // Normalize the amount of samples of each class
-   left_prior = n_left_samples/n_samples;
-   keep_prior = n_keep_samples/n_samples;
-   right_prior = n_right_samples/n_samples;
+  // For each label, compute ArrayXd of means, one for each data class 
+  //   (s, d, s_dot, d_dot).
+  // These will be used later to provide distributions for conditional 
+  //   probabilites.
+  // Means are stored in an ArrayXd of size 4.
   
-   return;
+  float left_size = 0;
+  float keep_size = 0;
+  float right_size = 0;
+  
+  // For each label, compute the numerators of the means for each class
+  //   and the total number of data points given with that label.
+  for (int i=0; i<labels.size(); ++i) {
+    if (labels[i] == "left") {
+      // conversion of data[i] to ArrayXd
+      left_means += ArrayXd::Map(data[i].data(), data[i].size());
+      left_size += 1;
+    } else if (labels[i] == "keep") {
+      keep_means += ArrayXd::Map(data[i].data(), data[i].size());
+      keep_size += 1;
+    } else if (labels[i] == "right") {
+      right_means += ArrayXd::Map(data[i].data(), data[i].size());
+      right_size += 1;
+    }
+  }
+
+  // Compute the means. Each result is a ArrayXd of means 
+  //   (4 means, one for each class)
+  left_means = left_means/left_size;
+  keep_means = keep_means/keep_size;
+  right_means = right_means/right_size;
+  
+  // Begin computation of standard deviations for each class/label combination.
+  ArrayXd data_point;
+  
+  // Compute numerators of the standard deviations.
+  for (int i=0; i<labels.size(); ++i) {
+    data_point = ArrayXd::Map(data[i].data(), data[i].size());
+    if (labels[i] == "left"){
+      left_sds += (data_point - left_means)*(data_point - left_means);
+    } else if (labels[i] == "keep") {
+      keep_sds += (data_point - keep_means)*(data_point - keep_means);
+    } else if (labels[i] == "right") {
+      right_sds += (data_point - right_means)*(data_point - right_means);
+    }
+  }
+  
+  // compute standard deviations
+  left_sds = (left_sds/left_size).sqrt();
+  keep_sds = (keep_sds/keep_size).sqrt();
+  right_sds = (right_sds/right_size).sqrt();
+  std::cout << "sds " << left_sds << " " << keep_sds << " " << right_sds <<std::endl;
+    
+  //Compute the probability of each label
+  left_prior = left_size/labels.size();
+  keep_prior = keep_size/labels.size();
+  right_prior = right_size/labels.size();
+   std::cout << "prior " << left_prior << " " << keep_prior << " " << right_prior <<std::endl;
 }
 
-string GNB::predict(const vector<double> &sample)
-{
+string GNB::predict(const vector<double> &sample) {
   /**
    * Once trained, this method is called and expected to return 
    *   a predicted behavior for the given observation.
@@ -186,46 +125,38 @@ string GNB::predict(const vector<double> &sample)
    * @output A label representing the best guess of the classifier. Can
    *   be one of "left", "keep" or "right".
    *
-   * DONE: Complete this function to return your classifier's prediction
+   * TODO: Complete this function to return your classifier's prediction
    */
-   
-  //**************
-  // STEP 0: setup
-  //**************
-  double left_prob = 0.333333;
-  double keep_prob = 0.333333;
-  double right_prob = 0.333333;
   
-  
-  //*********************************************
-  // STEP 1: Compute probabilities for each class
-  //*********************************************
-  // For each state variable
-  for(unsigned idx=0; idx<sample.size(); idx++)
-  {
-      // Compute Gaussian Naive Bayes's probabilities
-      left_prob = (1 / sqrt(2 *M_PI*pow(left_var[idx], 2)))
-                * exp(-pow(sample[idx]-left_mean[idx], 2) / (2*pow(left_var[idx], 2)));
-      keep_prob = (1 / sqrt(2 *M_PI*pow(keep_var[idx], 2)))
-                * exp(-pow(sample[idx]-keep_mean[idx], 2) / (2*pow(keep_var[idx], 2)));
-      right_prob = (1 / sqrt(2 *M_PI*pow(right_var[idx], 2)))
-                * exp(-pow(sample[idx]-right_mean[idx], 2) / (2*pow(right_var[idx], 2)));
+  // Calculate product of conditional probabilities for each label.
+  double left_p = 1.0;
+  double keep_p = 1.0;
+  double right_p = 1.0; 
+
+  for (int i=0; i<4; ++i) {
+    left_p *= (1.0/sqrt(2.0 * M_PI * pow(left_sds[i], 2))) 
+            * exp(-0.5*pow(sample[i] - left_means[i], 2)/pow(left_sds[i], 2));
+    keep_p *= (1.0/sqrt(2.0 * M_PI * pow(keep_sds[i], 2)))
+            * exp(-0.5*pow(sample[i] - keep_means[i], 2)/pow(keep_sds[i], 2));
+    right_p *= (1.0/sqrt(2.0 * M_PI * pow(right_sds[i], 2))) 
+            * exp(-0.5*pow(sample[i] - right_means[i], 2)/pow(right_sds[i], 2));
+  }
+
+  // Multiply each by the prior
+  left_p *= left_prior;
+  keep_p *= keep_prior;
+  right_p *= right_prior;
+    
+  double probs[3] = {left_p, keep_p, right_p};
+  double max = left_p;
+  double max_index = 0;
+
+  for (int i=1; i<3; ++i) {
+    if (probs[i] > max) {
+      max = probs[i];
+      max_index = i;
+    }
   }
   
-  // Include prior
-  left_prob *= left_prior;
-  keep_prob *= keep_prior;
-  right_prob *= right_prior;
-  
-  
-  //****************************************************
-  // STEP 2: Search the index of the biggest probability
-  //****************************************************
-  // Build an std::vector with the probabilities
-  std::vector<double> probs = {left_prob, keep_prob, right_prob};
-  
-  // Get index of the biggest element
-  int max_idx = std::max_element(probs.begin(), probs.end())-probs.begin();
-  
-  return possible_labels[max_idx];
+  return this -> possible_labels[max_index];
 }

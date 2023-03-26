@@ -17,3 +17,7 @@ given:
 
 outputs
 * best path from anywhere
+# 二、Prediction
+## model based
+## data driven
+* 模型方法获取每种可能动作的几率

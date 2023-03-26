@@ -3,8 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream> // Added for the couts
-#include "Dense"
+#include "eigen3/Eigen/Dense"
 
 using Eigen::ArrayXd;
 using std::string;
@@ -25,7 +24,8 @@ class GNB {
   /**
    * Train classifier
    */
-  void train(const vector<vector<double>> &data, const vector<string> &labels);
+  void train(const vector<vector<double>> &data, 
+             const vector<string> &labels);
 
   /**
    * Predict with trained classifier
@@ -34,22 +34,18 @@ class GNB {
 
   vector<string> possible_labels = {"left","keep","right"};
   
-  // EDITED: Add containers for state means, variances and priors of each class
-  //// The state is [s, d, s_dot, d_dot]
-  //// The classes are "left", "keep"and "right"
-  //// For each class, we will have a normal distribution and a prior for each state element
-  //// NOTE: I use Eigen::ArrayXd instead of std::vector for the operations with scalars
-  Eigen::ArrayXd left_mean;
-  Eigen::ArrayXd keep_mean;
-  Eigen::ArrayXd right_mean;
-  
-  Eigen::ArrayXd left_var;
-  Eigen::ArrayXd keep_var;
-  Eigen::ArrayXd right_var;
-  
+  ArrayXd left_means;
+  ArrayXd left_sds;
   double left_prior;
+  
+  ArrayXd keep_means;
+  ArrayXd keep_sds;
   double keep_prior;
+  
+  ArrayXd right_means;
+  ArrayXd right_sds;
   double right_prior;
+
 };
 
 #endif  // CLASSIFIER_H

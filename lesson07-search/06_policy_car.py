@@ -83,7 +83,10 @@ def optimum_policy2D(grid, init, goal, cost):
     while change:
         change = False
 
-        # Go trough the whole solution space
+        # Go trough the whole solution space# eigen
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIRS})
+
         for x in range(n_rows):
             for y in range(n_cols):
                 for theta in range(4):
