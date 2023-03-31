@@ -60,5 +60,6 @@
     "cinttypes": "cpp",
     "typeindex": "cpp",
     "typeinfo": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "${workspaceFolder}/lesson08-prediction/00_naive_bayes"
 }
