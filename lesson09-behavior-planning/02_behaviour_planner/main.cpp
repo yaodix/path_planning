@@ -49,11 +49,12 @@ int main() {
     if (timestep > 100) {
       break;
     }
-    road.advance();
     road.display(timestep);
+    road.advance();
     //time.sleep(float(1.0) / FRAMES_PER_SECOND);
   }
 
+  road.display(timestep);
   Vehicle ego = road.get_ego();
   if (ego.lane == GOAL[1]) {
     cout << "You got to the goal in " << timestep << " seconds!" << endl;
