@@ -23,8 +23,6 @@ Vehicle::Vehicle(int lane, float s, float v, float a, string state) {
 
 Vehicle::~Vehicle() {}
 
-vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &predictions)
-{
   /**
    * Here you can implement the transition_function code from the Behavior 
    *   Planning Pseudocode classroom concept.
@@ -47,7 +45,8 @@ vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &prediction
    *
    * DONE: My solution here.
    */
-
+vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &predictions)
+{
   // Get possible successor states (the ones connected with the current one)
   vector<string> possible_successors = successor_states();
   
@@ -73,10 +72,10 @@ vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &prediction
   return trajectories[min_cost_idx];
 }
 
+// Provides the possible next states given the current state for the FSM 
+//   discussed in the course, with the exception that lane changes happen 
+//   instantaneously, so LCL and LCR can only transition back to KL.
 vector<string> Vehicle::successor_states() {
-  // Provides the possible next states given the current state for the FSM 
-  //   discussed in the course, with the exception that lane changes happen 
-  //   instantaneously, so LCL and LCR can only transition back to KL.
   vector<string> states;
   states.push_back("KL");
   string state = this->state;
@@ -117,11 +116,11 @@ vector<Vehicle> Vehicle::generate_trajectory(string state,
   return trajectory;
 }
 
+// Gets next timestep kinematics (position, velocity, acceleration) 
+//   for a given lane. Tries to choose the maximum velocity and acceleration, 
+//   given other vehicle positions and accel/velocity constraints.
 vector<float> Vehicle::get_kinematics(map<int, vector<Vehicle>> &predictions, 
                                       int lane) {
-  // Gets next timestep kinematics (position, velocity, acceleration) 
-  //   for a given lane. Tries to choose the maximum velocity and acceleration, 
-  //   given other vehicle positions and accel/velocity constraints.
   float max_velocity_accel_limit = this->max_acceleration + this->v;
   float new_position;
   float new_velocity;
@@ -260,10 +259,10 @@ bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> &predictions,
   return found_vehicle;
 }
 
+// Returns a true if a vehicle is found ahead of the current vehicle, false 
+//   otherwise. The passed reference rVehicle is updated if a vehicle is found.
 bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> &predictions, 
                                 int lane, Vehicle &rVehicle) {
-  // Returns a true if a vehicle is found ahead of the current vehicle, false 
-  //   otherwise. The passed reference rVehicle is updated if a vehicle is found.
   int min_s = this->goal_s;
   bool found_vehicle = false;
   Vehicle temp_vehicle;

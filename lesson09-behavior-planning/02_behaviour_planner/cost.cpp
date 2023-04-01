@@ -108,18 +108,18 @@ float calculate_cost(const Vehicle &vehicle,
   return cost;
 }
 
+// Generate helper data to use in cost functions:
+// intended_lane: the current lane +/- 1 if vehicle is planning or 
+//   executing a lane change.
+// final_lane: the lane of the vehicle at the end of the trajectory.
+// distance_to_goal: the distance of the vehicle to the goal.
+
+// Note that intended_lane and final_lane are both included to help 
+//   differentiate between planning and executing a lane change in the 
+//   cost functions.
 map<string, float> get_helper_data(const Vehicle &vehicle, 
                                    const vector<Vehicle> &trajectory, 
                                    const map<int, vector<Vehicle>> &predictions) {
-  // Generate helper data to use in cost functions:
-  // intended_lane: the current lane +/- 1 if vehicle is planning or 
-  //   executing a lane change.
-  // final_lane: the lane of the vehicle at the end of the trajectory.
-  // distance_to_goal: the distance of the vehicle to the goal.
-
-  // Note that intended_lane and final_lane are both included to help 
-  //   differentiate between planning and executing a lane change in the 
-  //   cost functions.
   map<string, float> trajectory_data;
   Vehicle trajectory_last = trajectory[1];
   float intended_lane;
