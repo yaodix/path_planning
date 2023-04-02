@@ -47,13 +47,16 @@ void Road::populate_traffic() {
       }
     }
   }
+
+  // for collision debug
+  this->vehicles[10].s +=7;
 }
 
 void Road::advance() {
   map<int ,vector<Vehicle> > predictions;
 
   map<int, Vehicle>::iterator it = this->vehicles.begin();
-
+  // 为了判断自车的下一步运动，需要获得环境中所有的车辆[位置]预测信息
   while (it != this->vehicles.end()) {
     int v_id = it->first;
     vector<Vehicle> preds = it->second.generate_predictions();

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.0)
 project(behavior_planning)
 
-set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "set build type to debug")
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 # eigen

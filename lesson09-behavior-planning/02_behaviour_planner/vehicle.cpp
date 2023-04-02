@@ -3,6 +3,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <iostream>
 #include <vector>
 #include "cost.h"
 
@@ -54,14 +55,34 @@ vector<Vehicle> Vehicle::choose_next_state(map<int, vector<Vehicle>> &prediction
   vector<float> costs;
   vector<vector<Vehicle>> trajectories;
   
-  for(unsigned int state=0; state<possible_successors.size(); state++)
-  {
+  for(unsigned int state=0; state<possible_successors.size(); state++) {
       // Generate trajectory assuming that this is the chosen state
       trajectories.push_back(generate_trajectory(possible_successors[state], predictions));
-      
-      // Calculate the global cost for this trajectory
-      costs.push_back(calculate_cost(*this, predictions, trajectories[state]));
   }
+  // 去除预测位置有碰撞的轨迹
+  int security_gap = 2;
+  for (vector<vector<Vehicle>>::iterator traj_ite = trajectories.begin(); traj_ite != trajectories.end();) {
+    bool erased = false;
+    for (const auto& pred_vhe : predictions) {
+      if (pred_vhe.first == -1) continue;  // ignore ego car
+
+      if (traj_ite->back().lane == pred_vhe.second.back().lane &&
+          abs(traj_ite->back().s - pred_vhe.second.back().s) < security_gap) {
+        traj_ite  = trajectories.erase(traj_ite);
+        std::cout << "erase id s lane " << pred_vhe.first << " " << pred_vhe.second.back().s <<
+          " " << pred_vhe.second.back().lane << std::endl;
+        erased = true;
+      } 
+    }
+    if (!erased) {
+      traj_ite++;
+    }
+  }
+
+ for (int i = 0; i < trajectories.size(); i++) {
+   // Calculate the global cost for this trajectory
+   costs.push_back(calculate_cost(*this, predictions, trajectories[i]));
+ }
   
   // Find the lowest cost (associated to a trajectory associated to an state)
   int min_cost_idx = std::min_element(costs.begin(), costs.end())-costs.begin();
@@ -248,7 +269,7 @@ bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> &predictions,
   for (map<int, vector<Vehicle>>::iterator it = predictions.begin(); 
        it != predictions.end(); ++it) {
     temp_vehicle = it->second[0];
-    if (temp_vehicle.lane == this->lane && temp_vehicle.s < this->s 
+    if (temp_vehicle.lane == lane && temp_vehicle.s < this->s  // fix this->lan to lane
         && temp_vehicle.s > max_s) {
       max_s = temp_vehicle.s;
       rVehicle = temp_vehicle;
@@ -268,8 +289,8 @@ bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> &predictions,
   Vehicle temp_vehicle;
   for (map<int, vector<Vehicle>>::iterator it = predictions.begin(); 
        it != predictions.end(); ++it) {
-    temp_vehicle = it->second[0];
-    if (temp_vehicle.lane == this->lane && temp_vehicle.s > this->s 
+    temp_vehicle = it->second[0];  // fix second[0] to second[1]? 只判断当前位置是否碰撞?
+    if (temp_vehicle.lane == lane && temp_vehicle.s > this->s   // fix this->lan to lane
         && temp_vehicle.s < min_s) {
       min_s = temp_vehicle.s;
       rVehicle = temp_vehicle;
