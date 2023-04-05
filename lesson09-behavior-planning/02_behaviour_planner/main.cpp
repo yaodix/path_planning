@@ -26,6 +26,7 @@ vector<int> GOAL = {300, 0};
 int FRAMES_PER_SECOND = 4;
 int AMOUNT_OF_ROAD_VISIBLE = 40;
 
+// behavior selection
 int main() {
   Road road = Road(SPEED_LIMIT, TRAFFIC_DENSITY, LANE_SPEEDS);
 

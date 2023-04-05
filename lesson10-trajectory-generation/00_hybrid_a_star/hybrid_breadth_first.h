@@ -16,6 +16,7 @@ class HBF {
   // HBF structs
   struct maze_s {
     int g;  // iteration
+    int f;
     double x;
     double y;
     double theta;
@@ -31,17 +32,18 @@ class HBF {
   int theta_to_stack_number(double theta);
 
   int idx(double float_num);
+    
+  double heuristic(double x, double y, vector<int> &goal);
 
-  vector<maze_s> expand(maze_s &state);
+  static bool compare_maze_s(const HBF::maze_s &lhs, const HBF::maze_s &rhs);
+
+  vector<maze_s> expand(maze_s &state, vector<int> &goal);
 
   vector<maze_s> reconstruct_path(vector<vector<vector<maze_s>>> &came_from, 
                                   vector<double> &start, HBF::maze_s &final);
 
   maze_path search(vector<vector<int>> &grid, vector<double> &start, 
                    vector<int> &goal);
-
-  // DONE: Add method that returns manhattan distance as an heuristic
-  int manhattan(int x, int y, int goal_x, int goal_y);
 
  private:
   const int NUM_THETA_CELLS = 90;

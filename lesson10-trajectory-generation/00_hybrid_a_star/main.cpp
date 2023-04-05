@@ -30,7 +30,7 @@ vector<vector<int>> GRID = {
   {_,X,X,X,_,_,_,_,_,_,_,_,_,_,_,_,},
   {X,X,X,_,_,_,_,_,_,_,_,_,_,_,_,_,}};
 
-vector<double> START = {0.0,0.0,0.0};
+vector<double> START = {0.0 ,0.0, 0.0};
 vector<int> GOAL = {(int)GRID.size()-1, (int)GRID[0].size()-1};
 
 int main() {
@@ -47,7 +47,7 @@ int main() {
 
   HBF hbf = HBF();
 
-  HBF::maze_path get_path = hbf.search(GRID,START,GOAL);
+  HBF::maze_path get_path = hbf.search(GRID, START, GOAL);
 
   vector<HBF::maze_s> show_path = hbf.reconstruct_path(get_path.came_from, 
                                                        START, get_path.final);
