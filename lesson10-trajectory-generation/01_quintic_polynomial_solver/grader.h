@@ -39,6 +39,7 @@ vector<test_case> create_tests() {
   test_case tc1;
   tc1.start = {0,10,0};
   tc1.end = {10,10,0};
+  
   tc1.T = 1;
   tc.push_back(tc1);
 

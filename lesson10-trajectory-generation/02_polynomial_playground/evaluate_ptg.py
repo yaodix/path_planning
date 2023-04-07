@@ -4,7 +4,7 @@ from ptg import PTG
 from helpers import Vehicle, show_trajectory
 
 def main():
-	vehicle = Vehicle([0,10,0, 0,0,0])
+	vehicle = Vehicle([0,10,0, 0,0,0])  # 对应 s, d的三个参数
 	predictions = {0: vehicle}
 	target = 0
 	delta = [0, 0, 0, 0, 0 ,0]
